@@ -1,12 +1,86 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Bookstore Search</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+    }
+    #search-box {
+      padding: 8px;
+      width: 300px;
+    }
+    #results {
+      margin-top: 20px;
+    }
+    .book-result {
+      padding: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      cursor: pointer;
+      background-color: #f9f9f9;
+    }
+    .book-result:hover {
+      background-color: #e0f7fa;
+    }
+    .description {
+      display: none;
+      margin-top: 10px;
+      padding: 10px;
+      background: #f1f1f1;
+    }
+  </style>
 </head>
 <body>
-  <input type="text" id="searchInput" placeholder="Search books...">
-  <button id="searchBtn">Search</button>
+
+  <h2>Bookstore Search</h2>
+  <input type="text" id="search-box" placeholder="Search for books...">
+
   <div id="results"></div>
+
+  <script>
+    let booksData = [];
+
+    // Load books data from JSON (simulate AJAX)
+    $.getJSON('books.json', function(data) {
+      booksData = data;
+    });
+
+    // Event listener for typing in search box
+    $('#search-box').on('keyup', function () {
+      const keyword = $(this).val().toLowerCase();
+      $('#results').empty();
+
+      const filteredBooks = booksData.filter(book =>
+        book.title.toLowerCase().includes(keyword) ||
+        book.author.toLowerCase().includes(keyword)
+      );
+
+      filteredBooks.forEach(book => {
+        const $bookDiv = $(`
+          <div class="book-result">
+            <strong>${book.title}</strong> by ${book.author}
+            <div class="description">${book.description}</div>
+          </div>
+        `);
+
+        // Add click event for description slide down
+        $bookDiv.click(function () {
+          $(this).find('.description')
+            .stop(true, true)
+            .fadeIn(300)
+            .delay(100)
+            .slideDown(300);
+        });
+
+        $('#results').append($bookDiv.hide().fadeIn(500));
+      });
+    });
+  </script>
+
 </body>
 </html>
+
